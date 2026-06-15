@@ -9,7 +9,7 @@ public class ReportService
     public string BuildRevenueReport(List<RepairOrder> orders, DateTime from, DateTime to)
     {
         var result = new StringBuilder();
-        var selected = orders.Where(o => o.AcceptedAt.Date >= from.Date && o.AcceptedAt.Date <= to.Date).ToList();
+        var selected = orders.Where(o => o.IsWithin(from, to)).ToList();
         result.AppendLine($"Revenue for period {from:d} - {to:d}: {selected.Sum(x => x.Cost):C}");
         result.AppendLine($"Orders: {selected.Count}");
         result.AppendLine($"With service multiplier: {(selected.Sum(x => x.Cost) * RevenueMultiplier):C}");
