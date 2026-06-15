@@ -18,7 +18,7 @@ public class RepairOrder : BaseEntity
     public DateTime? CompletedAt { get; set; }
     public decimal Cost { get; set; }
     public PaymentMethod PaymentMethod { get; set; } ;
-    public List<RepairWork> Works { get; set; } = new();
+    public List<RepairWork> Works { get; private set; } = new();
     public List<string> UsedPartIds { get; set; } = new();
     public List<string> StatusHistory { get; set; } = new();
     public bool IsWithin(DateTime from, DateTime to)
