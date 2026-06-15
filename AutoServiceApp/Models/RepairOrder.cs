@@ -10,14 +10,14 @@ public class RepairOrder : BaseEntity
     [System.Text.Json.Serialization.JsonIgnore]
     public Car? Car { get; set; }
     public string ProblemDescription { get; set; } = "";
-    public OrderStatus Status { get; set; };
+    public OrderStatus Status { get; set; }
     public string AssignedMechanicId { get; set; } = "";
     [System.Text.Json.Serialization.JsonIgnore]
     public Mechanic? AssignedMechanic { get; set; }
     public DateTime AcceptedAt { get; set; } = DateTime.Now;
     public DateTime? CompletedAt { get; set; }
     public decimal Cost { get; set; }
-    public PaymentMethod PaymentMethod { get; set; } ;
+    public PaymentMethod PaymentMethod { get; set; }
     public List<RepairWork> Works { get; private set; } = new();
     public List<string> UsedPartIds { get; set; } = new();
     public List<string> StatusHistory { get; set; } = new();
@@ -29,7 +29,7 @@ public class RepairOrder : BaseEntity
 
     public override string ToString()
     {
-        return $"{OrderNumber}: {client}, {car}, {Status}, {Cost:C}";
+        return $"{OrderNumber}: {GetCustomerName()}, {GetVehicleDescription()}, {Status}, {Cost:C}";
     }
     public string GetCustomerName()
     {
