@@ -10,14 +10,14 @@ public class RepairOrder : BaseEntity
     [System.Text.Json.Serialization.JsonIgnore]
     public Car? Car { get; set; }
     public string ProblemDescription { get; set; } = "";
-    public string Status { get; set; } = "New";
+    public OrderStatus Status { get; set; };
     public string AssignedMechanicId { get; set; } = "";
     [System.Text.Json.Serialization.JsonIgnore]
     public Mechanic? AssignedMechanic { get; set; }
     public DateTime AcceptedAt { get; set; } = DateTime.Now;
     public DateTime? CompletedAt { get; set; }
     public decimal Cost { get; set; }
-    public string PaymentMethod { get; set; } = "cash";
+    public PaymentMethod PaymentMethod { get; set; } ;
     public List<RepairWork> Works { get; set; } = new();
     public List<string> UsedPartIds { get; set; } = new();
     public List<string> StatusHistory { get; set; } = new();

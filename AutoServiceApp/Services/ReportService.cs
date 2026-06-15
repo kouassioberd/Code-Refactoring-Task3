@@ -1,4 +1,5 @@
 using System.Text;
+using AutoServiceApp.Helpers;
 using AutoServiceApp.Models;
 
 namespace AutoServiceApp.Services;
@@ -30,7 +31,7 @@ public class ReportService
         sb.AppendLine("Mechanic workload");
         foreach (var m in mechanics)
         {
-            var count = orders.Count(o => o.AssignedMechanicId == m.Id && o.Status != "Released");
+            var count = orders.Count(o => o.AssignedMechanicId == m.Id && o.Status != OrderStatus.Released);
             var bonus = count > 5 ? 1000 : 0;
             sb.AppendLine($"{m.Name}: active orders {count}, estimated bonus {bonus}");
         }
