@@ -8,4 +8,10 @@ public class Mechanic : BaseEntity
     public List<string> AssignedOrderIds { get; set; } = new();
 
     public override string ToString() => $"{Name} - {Specialization}, {HourRate:C}/h";
+
+    public void AssignOrder(string orderId)
+    {
+        if (!AssignedOrderIds.Contains(orderId))
+            AssignedOrderIds.Add(orderId);
+    }
 }

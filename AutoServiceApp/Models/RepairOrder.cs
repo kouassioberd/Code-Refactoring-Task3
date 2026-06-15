@@ -55,3 +55,14 @@ public class WarrantyRepairOrder : RepairOrder
     public string WarrantyNumber { get; set; } = "";
     public bool ApprovedByDealer { get; set; }
 }
+
+public void ChangeStatus(OrderStatus status)
+{
+   Status = status;
+   StatusHistory.Add($"{DateTime.Now:g}: status changed to {status}");
+}
+
+public void AddWork(RepairWork work)
+{
+   Works.Add(work);
+}

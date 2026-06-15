@@ -12,4 +12,12 @@ public class Part : BaseEntity
     }
 
     public override string ToString() => $"{Name} [{Article}], {Price:C}, stock {Stock}";
+    public bool UseStock(int qty)
+    {
+        if (Stock < qty)
+            return false;
+
+        Stock -= qty;
+        return true;
+    }
 }

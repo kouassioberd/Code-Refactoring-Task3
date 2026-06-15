@@ -208,7 +208,7 @@ public class AutoServiceManager
         order.StatusHistory.Add($"{DateTime.Now:g}: order created with status {status}");
         Orders.Add(order);
         if (mechanic != null)
-            mechanic.AssignedOrderIds.Add(order.Id);
+            mechanic.AssignOrder(order.Id);
         SaveAll();
         return order;
     }
@@ -256,7 +256,7 @@ public class AutoServiceManager
         if (part.Stock < qty)
             return false;
 
-        part.Stock -= qty;
+        part.UseStock(qty);
         for (var i = 0; i < qty; i++)
             order.UsedPartIds.Add(part.Id);
         order.Cost += part.Price * qty * 1.50m;
