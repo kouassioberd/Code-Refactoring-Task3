@@ -66,9 +66,9 @@ public class AutoServiceManager
             m.AssignedOrderIds = Orders.Where(x => x.AssignedMechanicId == m.Id).Select(x => x.Id).ToList();
     }
 
-    public Customer AddCustomer(string name, string phone, string email, string address)
+    public Customer AddCustomer(ContactInfo info)
     {
-        var c = new Customer { Name = name, Phone = phone, Email = email, Address = address };
+        var c = new Customer { ContactInfo = info };
         Customers.Add(c);
         SaveAll();
         return c;
