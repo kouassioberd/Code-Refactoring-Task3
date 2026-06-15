@@ -29,9 +29,18 @@ public class RepairOrder : BaseEntity
 
     public override string ToString()
     {
-        var client = Customer?.Name ?? CustomerId;
-        var car = Car == null ? CarId : $"{Car.Make} {Car.Model}";
         return $"{OrderNumber}: {client}, {car}, {Status}, {Cost:C}";
+    }
+    public string GetCustomerName()
+    {
+        return Customer?.Name ?? CustomerId;
+    }
+
+    public string GetVehicleDescription()
+    {
+        return Car == null
+            ? CarId
+            : $"{Car.Make} {Car.Model}";
     }
 }
 
