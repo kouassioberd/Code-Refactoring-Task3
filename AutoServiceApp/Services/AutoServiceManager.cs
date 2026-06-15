@@ -14,10 +14,7 @@ public class AutoServiceManager
     public List<Mechanic> Mechanics { get; set; } = new();
     public List<string> Notifications { get; set; } = new();
 
-    public RepairOrder? _selectedOrder;
-    public Part? _selectedPart;
-    public decimal _tempDiscount;
-    public BaseReport? _currentReport;
+    public ManagerState State { get; set; } = new();
 
     public JsonFileStore<Customer> CustomerStore { get; set; } = new();
     public JsonFileStore<Car> CarStore { get; set; } = new();
@@ -69,34 +66,7 @@ public class AutoServiceManager
             m.AssignedOrderIds = Orders.Where(x => x.AssignedMechanicId == m.Id).Select(x => x.Id).ToList();
     }
 
-    public Customer AddCustomer(string name, string phone, string email, string address)
-    {
-        var c = new Customer { Name = name, Phone = phone, Email = email, Address = address };
-        Customers.Add(c);
-        SaveAll();
-        return c;
-    }
-
-    public void UpdateCustomer(Customer customer, string name, string phone, string email, string address)
-    {
-        customer.Name = name;
-        customer.Phone = phone;
-        customer.Email = email;
-        customer.Address = address;
-        foreach (var order in Orders.Where(x => x.CustomerId == customer.Id))
-            order.Customer = customer;
-        SaveAll();
-    }
-
-    public void DeleteCustomer(Customer customer)
-    {
-        Customers.Remove(customer);
-        foreach (var car in Cars.Where(x => x.CustomerId == customer.Id).ToList())
-            Cars.Remove(car);
-        foreach (var order in Orders.Where(x => x.CustomerId == customer.Id).ToList())
-            Orders.Remove(order);
-        SaveAll();
-    }
+    
 
     public Car AddCar(Customer? owner, string make, string model, int year, string vin, int mileage, string licensePlate)
     {
@@ -142,55 +112,9 @@ public class AutoServiceManager
         SaveAll();
     }
 
-    public Mechanic AddMechanic(string name, string specialization, decimal hourRate)
-    {
-        var m = new Mechanic { Name = name, Specialization = specialization, HourRate = hourRate };
-        Mechanics.Add(m);
-        SaveAll();
-        return m;
-    }
+    
 
-    public void UpdateMechanic(Mechanic m, string name, string specialization, decimal hourRate)
-    {
-        m.Name = name;
-        m.Specialization = specialization;
-        m.HourRate = hourRate;
-        SaveAll();
-    }
-
-    public void DeleteMechanic(Mechanic m)
-    {
-        Mechanics.Remove(m);
-        foreach (var order in Orders.Where(o => o.AssignedMechanicId == m.Id))
-        {
-            order.AssignedMechanicId = "";
-            order.AssignedMechanic = null;
-        }
-        SaveAll();
-    }
-
-    public Part AddPart(string name, string article, decimal price, int stock)
-    {
-        var p = new Part { Name = name, Article = article, Price = price, Stock = stock };
-        Parts.Add(p);
-        SaveAll();
-        return p;
-    }
-
-    public void UpdatePart(Part part, string name, string article, decimal price, int stock)
-    {
-        part.Name = name;
-        part.Article = article;
-        part.Price = price;
-        part.Stock = stock;
-        SaveAll();
-    }
-
-    public void DeletePart(Part p)
-    {
-        Parts.Remove(p);
-        SaveAll();
-    }
+    
 
     public RepairOrder CreateOrder(Customer? customer, Car? car, string description, Mechanic? mechanic, string status, string paymentMethod)
     {
@@ -211,7 +135,7 @@ public class AutoServiceManager
         order.StatusHistory.Add($"{DateTime.Now:g}: order created with status {status}");
         Orders.Add(order);
         if (mechanic != null)
-            mechanic.AssignedOrderIds.Add(order.Id);
+            mechanic.AssignOrder(order.Id);
         SaveAll();
         return order;
     }
@@ -259,7 +183,7 @@ public class AutoServiceManager
         if (part.Stock < qty)
             return false;
 
-        part.Stock -= qty;
+        part.UseStock(qty);
         for (var i = 0; i < qty; i++)
             order.UsedPartIds.Add(part.Id);
         order.Cost += part.Price * qty * 1.50m;

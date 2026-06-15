@@ -10,23 +10,37 @@ public class RepairOrder : BaseEntity
     [System.Text.Json.Serialization.JsonIgnore]
     public Car? Car { get; set; }
     public string ProblemDescription { get; set; } = "";
-    public string Status { get; set; } = "New";
+    public OrderStatus Status { get; set; }
     public string AssignedMechanicId { get; set; } = "";
     [System.Text.Json.Serialization.JsonIgnore]
     public Mechanic? AssignedMechanic { get; set; }
     public DateTime AcceptedAt { get; set; } = DateTime.Now;
     public DateTime? CompletedAt { get; set; }
     public decimal Cost { get; set; }
-    public string PaymentMethod { get; set; } = "cash";
-    public List<RepairWork> Works { get; set; } = new();
+    public PaymentMethod PaymentMethod { get; set; }
+    public List<RepairWork> Works { get; private set; } = new();
     public List<string> UsedPartIds { get; set; } = new();
     public List<string> StatusHistory { get; set; } = new();
+    public bool IsWithin(DateTime from, DateTime to)
+    {
+        return AcceptedAt.Date >= from.Date &&
+               AcceptedAt.Date <= to.Date;
+    }
 
     public override string ToString()
     {
-        var client = Customer?.Name ?? CustomerId;
-        var car = Car == null ? CarId : $"{Car.Make} {Car.Model}";
-        return $"{OrderNumber}: {client}, {car}, {Status}, {Cost:C}";
+        return $"{OrderNumber}: {GetCustomerName()}, {GetVehicleDescription()}, {Status}, {Cost:C}";
+    }
+    public string GetCustomerName()
+    {
+        return Customer?.Name ?? CustomerId;
+    }
+
+    public string GetVehicleDescription()
+    {
+        return Car == null
+            ? CarId
+            : $"{Car.Make} {Car.Model}";
     }
 }
 
@@ -40,4 +54,15 @@ public class WarrantyRepairOrder : RepairOrder
 {
     public string WarrantyNumber { get; set; } = "";
     public bool ApprovedByDealer { get; set; }
+}
+
+public void ChangeStatus(OrderStatus status)
+{
+   Status = status;
+   StatusHistory.Add($"{DateTime.Now:g}: status changed to {status}");
+}
+
+public void AddWork(RepairWork work)
+{
+   Works.Add(work);
 }

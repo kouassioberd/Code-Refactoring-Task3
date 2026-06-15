@@ -1,4 +1,5 @@
 using System.Text;
+using AutoServiceApp.Helpers;
 using AutoServiceApp.Models;
 
 namespace AutoServiceApp.Services;
@@ -8,10 +9,10 @@ public class ReportService
     public string BuildRevenueReport(List<RepairOrder> orders, DateTime from, DateTime to)
     {
         var result = new StringBuilder();
-        var selected = orders.Where(o => o.AcceptedAt.Date >= from.Date && o.AcceptedAt.Date <= to.Date).ToList();
+        var selected = orders.Where(o => o.IsWithin(from, to)).ToList();
         result.AppendLine($"Revenue for period {from:d} - {to:d}: {selected.Sum(x => x.Cost):C}");
         result.AppendLine($"Orders: {selected.Count}");
-        result.AppendLine($"With service multiplier: {(selected.Sum(x => x.Cost) * 1.20m):C}");
+        result.AppendLine($"With service multiplier: {(selected.Sum(x => x.Cost) * RevenueMultiplier):C}");
         return result.ToString();
     }
 
@@ -30,8 +31,8 @@ public class ReportService
         sb.AppendLine("Mechanic workload");
         foreach (var m in mechanics)
         {
-            var count = orders.Count(o => o.AssignedMechanicId == m.Id && o.Status != "Released");
-            var bonus = count > 5 ? 1000 : 0;
+            var count = orders.Count(o => o.AssignedMechanicId == m.Id && o.Status != OrderStatus.Released);
+            var bonus = count > 5 ? MechanicBonus : 0;
             sb.AppendLine($"{m.Name}: active orders {count}, estimated bonus {bonus}");
         }
         return sb.ToString();
@@ -43,7 +44,7 @@ public class ReportService
         sb.AppendLine("Parts stock");
         foreach (var p in parts.OrderBy(x => x.Stock))
         {
-            var line = p.Stock < 3 ? $"{p.Name} [{p.Article}] stock {p.Stock}, reorder at least 10000" : $"{p.Name} [{p.Article}] stock {p.Stock}";
+            var line = p.Stock < LowStockThreshold ? $"{p.Name} [{p.Article}] stock {p.Stock}, reorder at least 10000" : $"{p.Name} [{p.Article}] stock {p.Stock}";
             sb.AppendLine(line);
         }
         return sb.ToString();

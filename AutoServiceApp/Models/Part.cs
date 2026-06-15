@@ -5,7 +5,19 @@ public class Part : BaseEntity
     public string Name { get; set; } = "";
     public string Article { get; set; } = "";
     public decimal Price { get; set; }
-    public int Stock { get; set; }
+    public int Stock { get; private set; }
+    public string PrettyName()
+    {
+        return $"{Name} ({Article})";
+    }
 
     public override string ToString() => $"{Name} [{Article}], {Price:C}, stock {Stock}";
+    public bool UseStock(int qty)
+    {
+        if (Stock < qty)
+            return false;
+
+        Stock -= qty;
+        return true;
+    }
 }

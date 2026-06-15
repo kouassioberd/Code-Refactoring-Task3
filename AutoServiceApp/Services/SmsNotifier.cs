@@ -1,11 +1,11 @@
 namespace AutoServiceApp.Services;
 
-public class SmsNotifier
+public class SmsNotifier : INotifier
 {
     public List<string> SentMessages { get; set; } = new();
 
-    public void SendSms(string phone, string text)
+    public void Send(string recipient,string subject, string message)
     {
-        SentMessages.Add($"SMS {DateTime.Now:g} -> {phone}: {text}");
+        SentMessages.Add($"SMS {DateTime.Now:g} -> {recipient}: {message}");
     }
 }
